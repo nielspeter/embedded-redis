@@ -12,30 +12,28 @@ import java.util.UUID;
 
 public class RedisServer {
 
-    private static enum RedisEnum {
-        WINDOWS_32("redis-server.exe"),
-        WINDOWS_64("redis-server-64.exe"),
-        UNIX("redis-server"),
+    private static enum RedisServerEnum {
+        WINDOWS("redis-server.exe"),
+        LINUX("redis-server"),
         MACOSX("redis-server");
 
         private final String executableName;
 
-        private RedisEnum(String executableName) {
+        private RedisServerEnum(String executableName) {
             this.executableName = executableName;
         }
 
-        public static RedisEnum getRedisEnum() {
+        public static RedisServerEnum getRedisEnum() {
             String osName = System.getProperty("os.name").toLowerCase();
-            String osArch = System.getProperty("os.arch").toLowerCase();
 
             if (osName.contains("win")) {
-                return osArch.contains("64") ? WINDOWS_64 : WINDOWS_32;
-            } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
-                return UNIX;
-            } else if ("Mac OS X".equalsIgnoreCase(osName)) {
+                return WINDOWS;
+            } else if (osName.equals("linux")) {
+                return LINUX;
+            } else if ("mac os x".equals(osName)) {
                 return MACOSX;
             } else {
-                throw new RuntimeException("Unsupported os/architecture...: " + osName + " on " + osArch);
+                throw new RuntimeException("Unsupported os/architecture...: " + osName);
             }
         }
     }
@@ -65,16 +63,16 @@ public class RedisServer {
     public RedisServer(String version, int port) throws IOException {
         this.version = (version != null) ? version : LATEST_REDIS_VERSION;
         this.port = port;
-        this.command = extractExecutableFromJar(RedisEnum.getRedisEnum());
+        this.command = extractExecutableFromJar(RedisServerEnum.getRedisEnum());
     }
 
-    private File extractExecutableFromJar(RedisEnum redisEnum) throws IOException {
+    private File extractExecutableFromJar(RedisServerEnum redisServerEnum) throws IOException {
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         tmpDir.deleteOnExit();
 
-        String redisExecutablePath = "redis" + File.separator + version + File.separator + redisEnum.name().toLowerCase() + File.separator + redisEnum.executableName;
+        String redisExecutablePath = "redis" + File.separator + version + File.separator + redisServerEnum.name().toLowerCase() + File.separator + redisServerEnum.executableName;
         URL redisExecutableUrl = RedisServer.class.getClassLoader().getResource(redisExecutablePath);
-        File redisExecutableFile = new File(tmpDir, redisEnum.executableName);
+        File redisExecutableFile = new File(tmpDir, redisServerEnum.executableName);
 
         FileUtils.copyURLToFile(redisExecutableUrl, redisExecutableFile);
         redisExecutableFile.deleteOnExit();
@@ -85,6 +83,10 @@ public class RedisServer {
 
     public int getPort() {
         return port;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public boolean isActive() {
