@@ -3,41 +3,22 @@ embedded-redis
 
 Redis embedded server for Java integration testing
 
+This is a fork of https://github.com/kstyrc/embedded-redis
 
-Maven dependency
-==============
-
-Currently embedded-redis is available in clojars repository:
-```
-<repository>
-  <id>clojars.org</id>
-  <url>http://clojars.org/repo</url>
-</repository>
-```
-
-Dependency configuration:
-```
-<dependency>
-  <groupId>redis.embedded</groupId>
-  <artifactId>embedded-redis</artifactId>
-  <version>0.1</version>
-</dependency>
-```
-More at https://clojars.org/redis.embedded/embedded-redis
 
 Usage example
 ==============
 
 Running RedisServer is as simple as:
 ```
-RedisServer redisServer = new RedisServer(6379);
+RedisServer redisServer = new RedisServer();
 redisServer.start();
 // do some work
 redisServer.stop();
 ```
-You can also provide RedisServer with your own redis executable to run:
+You can also provide RedisServer with a version to run:
 ```
-RedisServer redisServer = new RedisServer("/path/to/your/redis", 6379);
+RedisServer redisServer = new RedisServer("2.8.5");
 ```
 A simple redis integration test would look like this:
 ```
@@ -46,7 +27,7 @@ public class SomeIntegrationTestThatRequiresRedis {
   
   @Before
   public void setup() throws Exception {
-    redisServer = new RedisServer(6379); // or new RedisServer("/path/to/your/redis", 6379);
+    redisServer = new RedisServer();
     redisServer.start();
   }
   
@@ -66,8 +47,5 @@ public class SomeIntegrationTestThatRequiresRedis {
 Redis version
 ==============
 
-When not provided with the desired redis executable, RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
-- Redis 2.6.14 in case of Linux/Unix
-- unofficial Win32/64 port from https://github.com/MSOpenTech/redis (branch 2.6) in case of Windows
-
-However, you should provide RedisServer with redis executable if you need specific version.
+RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
+- Redis 2.8.5 in case of Linux/Mac OS X
