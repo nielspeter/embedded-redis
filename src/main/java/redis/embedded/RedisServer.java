@@ -1,13 +1,10 @@
 package redis.embedded;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.UUID;
 
 public class RedisServer {
@@ -48,35 +45,38 @@ public class RedisServer {
     private volatile boolean active = false;
     private Process redisProcess;
 
-    public RedisServer() throws IOException {
+    public RedisServer() throws IOException, URISyntaxException {
         this(findFreePort());
     }
 
-    public RedisServer(String version) throws IOException {
+    public RedisServer(String version) throws IOException, URISyntaxException {
         this(version, findFreePort());
     }
 
-    public RedisServer(int port) throws IOException {
+    public RedisServer(int port) throws IOException, URISyntaxException {
         this(null, port);
     }
 
-    public RedisServer(String version, int port) throws IOException {
+    public RedisServer(String version, int port) throws IOException, URISyntaxException {
         this.version = (version != null) ? version : LATEST_REDIS_VERSION;
         this.port = port;
         this.command = extractExecutableFromJar(RedisServerEnum.getOsDependentRedisServerEnum());
     }
 
-    private File extractExecutableFromJar(RedisServerEnum redisServerEnum) throws IOException {
+    private File extractExecutableFromJar(RedisServerEnum redisServerEnum) throws IOException, URISyntaxException {
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         tmpDir.deleteOnExit();
+        tmpDir.mkdirs();
 
         String redisExecutablePath = "redis" + File.separator + version + File.separator + redisServerEnum.name().toLowerCase() + File.separator + redisServerEnum.executableName;
         URL redisExecutableUrl = RedisServer.class.getClassLoader().getResource(redisExecutablePath);
         File redisExecutableFile = new File(tmpDir, redisServerEnum.executableName);
+        redisExecutableFile.createNewFile();
 
-        FileUtils.copyURLToFile(redisExecutableUrl, redisExecutableFile);
-        redisExecutableFile.deleteOnExit();
+        copyFile(new File(redisExecutableUrl.toURI()), redisExecutableFile);
+
         redisExecutableFile.setExecutable(true);
+        redisExecutableFile.deleteOnExit();
 
         return redisExecutableFile;
     }
@@ -134,5 +134,23 @@ public class RedisServer {
         int port = server.getLocalPort();
         server.close();
         return port;
+    }
+
+    private static void copyFile(File sourceFile, File destFile) throws IOException {
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        } finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
     }
 }
