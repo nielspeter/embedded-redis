@@ -23,7 +23,7 @@ public class RedisServer {
             this.executableName = executableName;
         }
 
-        public static RedisServerEnum getRedisEnum() {
+        public static RedisServerEnum getOsDependentRedisServerEnum() {
             String osName = System.getProperty("os.name").toLowerCase();
 
             if (osName.contains("win")) {
@@ -63,7 +63,7 @@ public class RedisServer {
     public RedisServer(String version, int port) throws IOException {
         this.version = (version != null) ? version : LATEST_REDIS_VERSION;
         this.port = port;
-        this.command = extractExecutableFromJar(RedisServerEnum.getRedisEnum());
+        this.command = extractExecutableFromJar(RedisServerEnum.getOsDependentRedisServerEnum());
     }
 
     private File extractExecutableFromJar(RedisServerEnum redisServerEnum) throws IOException {
