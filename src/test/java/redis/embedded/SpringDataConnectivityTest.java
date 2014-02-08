@@ -18,10 +18,10 @@ public class SpringDataConnectivityTest {
 
     @Before
     public void setUp() throws Exception {
-        redisServer = new RedisServer(6379);
+        redisServer = new RedisServer();
         redisServer.start();
 
-        JedisShardInfo shardInfo = new JedisShardInfo("localhost", 6379);
+        JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisServer.getPort());
         connectionFactory = new JedisConnectionFactory();
         connectionFactory.setShardInfo(shardInfo);
 

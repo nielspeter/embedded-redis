@@ -12,32 +12,28 @@ import java.util.UUID;
 
 public class RedisServer {
 
-    private static enum RedisRunScriptEnum {
+    private static enum RedisEnum {
         WINDOWS_32("redis-server.exe"),
         WINDOWS_64("redis-server-64.exe"),
         UNIX("redis-server"),
-        MACOSX("redis-server.app");
+        MACOSX("redis-server");
 
-        private final String runScript;
+        private final String executableName;
 
-        private RedisRunScriptEnum(String runScript) {
-            this.runScript = runScript;
+        private RedisEnum(String executableName) {
+            this.executableName = executableName;
         }
 
-        public static String getRedisRunScript() {
+        public static RedisEnum getRedisEnum() {
             String osName = System.getProperty("os.name").toLowerCase();
             String osArch = System.getProperty("os.arch").toLowerCase();
 
             if (osName.contains("win")) {
-                if (osArch.contains("64")) {
-                    return WINDOWS_64.runScript;
-                } else {
-                    return WINDOWS_32.runScript;
-                }
+                return osArch.contains("64") ? WINDOWS_64 : WINDOWS_32;
             } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
-                return UNIX.runScript;
+                return UNIX;
             } else if ("Mac OS X".equalsIgnoreCase(osName)) {
-                return MACOSX.runScript;
+                return MACOSX;
             } else {
                 throw new RuntimeException("Unsupported os/architecture...: " + osName + " on " + osArch);
             }
@@ -45,9 +41,11 @@ public class RedisServer {
     }
 
     private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+    private final String LATEST_REDIS_VERSION = "2.8.5";
 
     private final File command;
     private final int port;
+    private final String version;
 
     private volatile boolean active = false;
     private Process redisProcess;
@@ -56,27 +54,33 @@ public class RedisServer {
         this(findFreePort());
     }
 
-    public RedisServer(File command, int port) {
-        this.command = command;
-        this.port = port;
+    public RedisServer(String version) throws IOException {
+        this(version, findFreePort());
     }
 
     public RedisServer(int port) throws IOException {
-        this.port = port;
-        this.command = extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+        this(null, port);
     }
 
-    private File extractExecutableFromJar(String scriptName) throws IOException {
+    public RedisServer(String version, int port) throws IOException {
+        this.version = (version != null) ? version : LATEST_REDIS_VERSION;
+        this.port = port;
+        this.command = extractExecutableFromJar(RedisEnum.getRedisEnum());
+    }
+
+    private File extractExecutableFromJar(RedisEnum redisEnum) throws IOException {
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         tmpDir.deleteOnExit();
 
-        File command = new File(tmpDir, scriptName);
-        URL url = RedisServer.class.getClassLoader().getResource(scriptName);
-        FileUtils.copyURLToFile(url, command);
-        command.deleteOnExit();
-        command.setExecutable(true);
+        String redisExecutablePath = "redis" + File.separator + version + File.separator + redisEnum.name().toLowerCase() + File.separator + redisEnum.executableName;
+        URL redisExecutableUrl = RedisServer.class.getClassLoader().getResource(redisExecutablePath);
+        File redisExecutableFile = new File(tmpDir, redisEnum.executableName);
 
-        return command;
+        FileUtils.copyURLToFile(redisExecutableUrl, redisExecutableFile);
+        redisExecutableFile.deleteOnExit();
+        redisExecutableFile.setExecutable(true);
+
+        return redisExecutableFile;
     }
 
     public int getPort() {
