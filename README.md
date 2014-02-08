@@ -1,7 +1,7 @@
 embedded-redis
 ==============
 
-Redis embedded server for Java integration testing
+Redis embedded server
 
 This is a fork of https://github.com/kstyrc/embedded-redis
 
@@ -47,5 +47,8 @@ public class SomeIntegrationTestThatRequiresRedis {
 Redis version
 ==============
 
-RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
+RedisServer runs os-dependent executable enclosed in jar.
+
+Currently it includes the following binaries:
+
 - Redis 2.8.5 in case of Linux/Mac OS X
