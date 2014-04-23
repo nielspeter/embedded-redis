@@ -16,7 +16,7 @@ Dependency configuration:
 <dependency>
   <groupId>com.orange.redis-embedded</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.3.1</version>
+  <version>0.3.2</version>
 </dependency>
 ```
 More at https://clojars.org/org.clojars.gaelbreard.redis.embedded/embedded-redis

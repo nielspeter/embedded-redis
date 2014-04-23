@@ -20,9 +20,9 @@
 
 	<scm>
 		<url>https://github.com/gbrd/embedded-redis</url>
-		<connection>scm:git:https://github.com/gbrd/embedded-redis.git</connection>
-		<developerConnection>scm:git:https://github.com/gbrd/embedded-redis.git</developerConnection>
-		<tag>HEAD</tag>
+		<connection>scm:git:git@github.com:gbrd/embedded-redis.git</connection>
+		<developerConnection>scm:git:git@github.com:gbrd/embedded-redis.git</developerConnection>
+		<tag>master</tag>
 	</scm>
 
 	<developers>
@@ -127,46 +127,30 @@
 				<version>2.5</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<!-- <useReleaseProfile>false</useReleaseProfile> <releaseProfiles>release</releaseProfiles> -->
+					<!-- <useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles> -->
 					<goals>deploy</goals>
 					<!-- arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments -->
 				</configuration>
 			</plugin>
-
+<!-- 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+ -->
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.4</version>
-						<configuration>
-							<passphrase>${gpg.passphrase}</passphrase>
-						</configuration>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 
 </project>
