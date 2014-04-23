@@ -4,7 +4,7 @@
 	<groupId>com.orange.redis-embedded</groupId>
 	<artifactId>embedded-redis</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.8-SNAPSHOT</version>
+	<version>0.3.8</version>
 	<name>embedded-redis</name>
 	<description>Redis embedded server for Java integration testing</description>
 	<url>https://github.com/gbrd/embedded-redis</url>
@@ -21,7 +21,7 @@
 		<url>https://github.com/gbrd/embedded-redis</url>
 		<connection>scm:git:git@github.com:gbrd/embedded-redis.git</connection>
 		<developerConnection>scm:git:git@github.com:gbrd/embedded-redis.git</developerConnection>
-		<tag>master</tag>
+		<tag>0.3.8</tag>
 	</scm>
 
 	<developers>
