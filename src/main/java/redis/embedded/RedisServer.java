@@ -36,7 +36,7 @@ public class RedisServer {
     }
 
     private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
-    private final String LATEST_REDIS_VERSION = "2.8.5";
+    private final String LATEST_REDIS_VERSION = "2.8.9";
 
     private final File command;
     private final int port;
