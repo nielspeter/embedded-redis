@@ -16,7 +16,7 @@ Dependency configuration:
 <dependency>
   <groupId>com.orange.redis-embedded</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.3</version>
+  <version>0.3.1</version>
 </dependency>
 ```
 More at https://clojars.org/org.clojars.gaelbreard.redis.embedded/embedded-redis
@@ -33,7 +33,7 @@ redisServer.stop();
 ```
 You can also provide RedisServer with a version to run:
 ```
-RedisServer redisServer = new RedisServer("2.8.5");
+RedisServer redisServer = new RedisServer("2.8.9");
 ```
 A simple redis integration test would look like this:
 ```
