@@ -3,8 +3,23 @@ embedded-redis
 
 Redis embedded server
 
-This is a fork of https://github.com/kstyrc/embedded-redis
+This is a fork of https://github.com/nielspeter/embedded-redis
 
+
+Maven dependency
+==============
+
+Currently embedded-redis is available in sonatype repository:
+
+Dependency configuration:
+```
+<dependency>
+  <groupId>com.orange.redis-embedded</groupId>
+  <artifactId>embedded-redis</artifactId>
+  <version>0.3</version>
+</dependency>
+```
+More at https://clojars.org/org.clojars.gaelbreard.redis.embedded/embedded-redis
 
 Usage example
 ==============
