@@ -1,10 +1,16 @@
 package redis.embedded;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.util.UUID;
 
 public class RedisServer {
@@ -69,19 +75,24 @@ public class RedisServer {
         tmpDir.mkdirs();
 
         String redisExecutablePath = "redis" + File.separator + version + File.separator + redisServerEnum.name().toLowerCase() + File.separator + redisServerEnum.executableName;
-        URL redisExecutableUrl = RedisServer.class.getClassLoader().getResource(redisExecutablePath);
+        //URL redisExecutableUrl = RedisServer.class.getClassLoader().getResource(redisExecutablePath);
+        InputStream redisExecutableIs = RedisServer.class.getClassLoader().getResourceAsStream(redisExecutablePath);
         File redisExecutableFile = new File(tmpDir, redisServerEnum.executableName);
-        redisExecutableFile.createNewFile();
+        //redisExecutableFile.createNewFile();
 
-        copyFile(new File(redisExecutableUrl.toURI()), redisExecutableFile);
-
+        //copyFile(redisExecutableIs, redisExecutableFile);
+        
+        long num = Files.copy(redisExecutableIs, redisExecutableFile.getAbsoluteFile().toPath());
+        //LOG.
+        
         redisExecutableFile.setExecutable(true);
         redisExecutableFile.deleteOnExit();
 
         return redisExecutableFile;
     }
 
-    public int getPort() {
+
+	public int getPort() {
         return port;
     }
 
@@ -122,9 +133,10 @@ public class RedisServer {
         return pb;
     }
 
-    public synchronized void stop() {
+    public synchronized void stop() throws InterruptedException {
         if (active) {
             redisProcess.destroy();
+            redisProcess.waitFor();
             active = false;
         }
     }
