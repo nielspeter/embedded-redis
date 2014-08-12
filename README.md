@@ -19,7 +19,6 @@ Dependency configuration:
   <version>0.4</version>
 </dependency>
 ```
-More at https://clojars.org/org.clojars.gaelbreard.redis.embedded/embedded-redis
 
 Usage example
 ==============
@@ -67,3 +66,5 @@ RedisServer runs os-dependent executable enclosed in jar.
 Currently it includes the following binaries:
 
 - Redis 2.8.5 in case of Linux/Mac OS X
+- Redis 2.8.9 in case of Linux/Mac OS X
+
