@@ -16,7 +16,7 @@ Dependency configuration:
 <dependency>
   <groupId>com.orange.redis-embedded</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.4</version>
+  <version>0.6</version>
 </dependency>
 ```
 
