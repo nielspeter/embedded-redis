@@ -3,8 +3,6 @@ package redis.embedded;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.util.UUID;
 
 public class RedisServer {
@@ -30,7 +28,7 @@ public class RedisServer {
             } else if ("mac os x".equals(osName)) {
                 return MACOSX;
             } else {
-                throw new RuntimeException("Unsupported os/architecture...: " + osName);
+                throw new RuntimeException("Unsupported OS: " + osName);
             }
         }
     }
@@ -64,16 +62,18 @@ public class RedisServer {
     }
 
     private File extractExecutableFromJar(RedisServerEnum redisServerEnum) throws IOException, URISyntaxException {
+        String redisExecutablePath = "redis" + File.separator + version + File.separator + redisServerEnum.name().toLowerCase() + File.separator + redisServerEnum.executableName;
+        InputStream redisExecutableInputStream = RedisServer.class.getClassLoader().getResourceAsStream(redisExecutablePath);
+        if (redisExecutableInputStream == null) throw new IllegalStateException("Redis executable not found in the JAR at location: " + redisExecutablePath);
+
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         tmpDir.deleteOnExit();
         tmpDir.mkdirs();
 
-        String redisExecutablePath = "redis" + File.separator + version + File.separator + redisServerEnum.name().toLowerCase() + File.separator + redisServerEnum.executableName;
-        URL redisExecutableUrl = RedisServer.class.getClassLoader().getResource(redisExecutablePath);
         File redisExecutableFile = new File(tmpDir, redisServerEnum.executableName);
         redisExecutableFile.createNewFile();
 
-        copyFile(new File(redisExecutableUrl.toURI()), redisExecutableFile);
+        copyFile(redisExecutableInputStream, redisExecutableFile);
 
         redisExecutableFile.setExecutable(true);
         redisExecutableFile.deleteOnExit();
@@ -118,13 +118,15 @@ public class RedisServer {
     private ProcessBuilder createRedisProcessBuilder() {
         ProcessBuilder pb = new ProcessBuilder(command.getAbsolutePath(), "--port", Integer.toString(port));
         pb.directory(command.getParentFile());
+        pb.redirectErrorStream();
 
         return pb;
     }
 
-    public synchronized void stop() {
+    public synchronized void stop() throws InterruptedException {
         if (active) {
             redisProcess.destroy();
+            redisProcess.waitFor();
             active = false;
         }
     }
@@ -136,21 +138,18 @@ public class RedisServer {
         return port;
     }
 
-    private static void copyFile(File sourceFile, File destFile) throws IOException {
-        FileChannel source = null;
-        FileChannel destination = null;
-
+    private static void copyFile(InputStream is, File destFile) throws IOException {
+        OutputStream os = null;
+        int readBytes;
+        byte[] buffer = new byte[4096];
         try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
+            os = new FileOutputStream(destFile);
+            while ((readBytes = is.read(buffer)) > 0) {
+                os.write(buffer, 0, readBytes);
+            }
         } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
+            is.close();
+            os.close();
         }
     }
 }
