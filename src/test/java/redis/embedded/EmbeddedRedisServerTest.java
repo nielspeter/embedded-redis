@@ -9,13 +9,13 @@ import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-public class RedisServerTest {
+public class EmbeddedRedisServerTest {
 
-	private RedisServer redisServer;
+	private EmbeddedRedisServer redisServer;
 	
 	@Test(timeout = 1500L)
 	public void testSimpleRun() throws Exception {
-		redisServer = new RedisServer();
+		redisServer = new EmbeddedRedisServer();
 		redisServer.start();
 		Thread.sleep(1000L);
 		redisServer.stop();
@@ -24,7 +24,7 @@ public class RedisServerTest {
 	@Test(expected = RuntimeException.class)
 	public void shouldNotAllowMultipleRunsWithoutStop() throws Exception {
 		try {
-			redisServer = new RedisServer();
+			redisServer = new EmbeddedRedisServer();
 			redisServer.start();
 			redisServer.start();
 		} finally {
@@ -34,7 +34,7 @@ public class RedisServerTest {
 	
 	@Test
 	public void shouldAllowSubsequentRuns() throws Exception {
-		redisServer = new RedisServer();
+		redisServer = new EmbeddedRedisServer();
 		redisServer.start();
 		redisServer.stop();
 		
@@ -49,7 +49,7 @@ public class RedisServerTest {
 	
 	@Test
 	public void testSimpleOperationsAfterRun() throws Exception {
-		redisServer = new RedisServer();
+		redisServer = new EmbeddedRedisServer();
 		redisServer.start();
 		
 		JedisPool pool = null;
@@ -73,13 +73,13 @@ public class RedisServerTest {
 
     @Test
     public void shouldIndicateInactiveBeforeStart() throws Exception {
-        redisServer = new RedisServer();
+        redisServer = new EmbeddedRedisServer();
         assertFalse(redisServer.isActive());
     }
 
     @Test
     public void shouldIndicateActiveAfterStart() throws Exception {
-        redisServer = new RedisServer();
+        redisServer = new EmbeddedRedisServer();
         redisServer.start();
         assertTrue(redisServer.isActive());
         redisServer.stop();
@@ -87,7 +87,7 @@ public class RedisServerTest {
 
     @Test
     public void shouldIndicateInactiveAfterStop() throws Exception {
-        redisServer = new RedisServer();
+        redisServer = new EmbeddedRedisServer();
         redisServer.start();
         redisServer.stop();
         assertFalse(redisServer.isActive());

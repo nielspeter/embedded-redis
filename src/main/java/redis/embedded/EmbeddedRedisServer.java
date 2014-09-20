@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-public class RedisServer {
+public class EmbeddedRedisServer {
 
     private static enum RedisServerEnum {
         WINDOWS("redis-server.exe"),
@@ -43,19 +43,19 @@ public class RedisServer {
     private volatile boolean active = false;
     private Process redisProcess;
 
-    public RedisServer() throws IOException, URISyntaxException {
+    public EmbeddedRedisServer() throws IOException, URISyntaxException {
         this(findFreePort());
     }
 
-    public RedisServer(String version) throws IOException, URISyntaxException {
+    public EmbeddedRedisServer(String version) throws IOException, URISyntaxException {
         this(version, findFreePort());
     }
 
-    public RedisServer(int port) throws IOException, URISyntaxException {
+    public EmbeddedRedisServer(int port) throws IOException, URISyntaxException {
         this(null, port);
     }
 
-    public RedisServer(String version, int port) throws IOException, URISyntaxException {
+    public EmbeddedRedisServer(String version, int port) throws IOException, URISyntaxException {
         this.version = (version != null) ? version : LATEST_REDIS_VERSION;
         this.port = port;
         this.command = extractExecutableFromJar(RedisServerEnum.getOsDependentRedisServerEnum());
@@ -63,7 +63,7 @@ public class RedisServer {
 
     private File extractExecutableFromJar(RedisServerEnum redisServerEnum) throws IOException, URISyntaxException {
         String redisExecutablePath = "redis" + File.separator + version + File.separator + redisServerEnum.name().toLowerCase() + File.separator + redisServerEnum.executableName;
-        InputStream redisExecutableInputStream = RedisServer.class.getClassLoader().getResourceAsStream(redisExecutablePath);
+        InputStream redisExecutableInputStream = EmbeddedRedisServer.class.getClassLoader().getResourceAsStream(redisExecutablePath);
         if (redisExecutableInputStream == null) throw new IllegalStateException("Redis executable not found in the JAR at location: " + redisExecutablePath);
 
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

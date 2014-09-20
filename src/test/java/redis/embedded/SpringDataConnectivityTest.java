@@ -12,13 +12,13 @@ import static org.junit.Assert.assertEquals;
 
 public class SpringDataConnectivityTest {
 
-    private RedisServer redisServer;
+    private EmbeddedRedisServer redisServer;
     private RedisTemplate<String, String> template;
     private JedisConnectionFactory connectionFactory;
 
     @Before
     public void setUp() throws Exception {
-        redisServer = new RedisServer();
+        redisServer = new EmbeddedRedisServer();
         redisServer.start();
 
         JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisServer.getPort());
