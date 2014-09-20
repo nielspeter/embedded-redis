@@ -139,17 +139,17 @@ public class RedisServer {
     }
 
     private static void copyFile(InputStream is, File destFile) throws IOException {
-        OutputStream os = null;
+        OutputStream fos = null;
         int readBytes;
         byte[] buffer = new byte[4096];
         try {
-            os = new FileOutputStream(destFile);
+            fos = new FileOutputStream(destFile);
             while ((readBytes = is.read(buffer)) > 0) {
-                os.write(buffer, 0, readBytes);
+                fos.write(buffer, 0, readBytes);
             }
         } finally {
-            is.close();
-            os.close();
+            if (is != null) is.close();
+            if (fos != null) fos.close();
         }
     }
 }
