@@ -8,7 +8,7 @@
     <version>1.0.0</version>
     <name>embedded-redis</name>
     <description>Redis embedded server for Java integration testing</description>
-    <url>https://github.com/kstyrc/embedded-redis</url>
+    <url>https://github.com/nielspeter/embedded-redis</url>
 
     <licenses>
         <license>
@@ -20,8 +20,8 @@
 
     <scm>
         <url>https://github.com/kstyrc/embedded-redis</url>
-        <connection>scm:git:https://github.com/kstyrc/embedded-redis.git</connection>
-        <developerConnection>scm:git:https://github.com/kstyrc/embedded-redis.git</developerConnection>
+        <connection>scm:git:https://github.com/nielspeter/embedded-redis.git</connection>
+        <developerConnection>scm:git:https://github.com/nielspeter/embedded-redis.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -31,6 +31,11 @@
             <name>Krzysztof Styrc</name>
             <email>kstyrc@gmail.com</email>
         </developer>
+        <developer>
+            <id>2</id>
+            <name>Niels Peter Strandberg</name>
+            <email>nielspeter@npstrandberg.com</email>
+        </developer>
     </developers>
 
     <properties>
@@ -39,11 +44,17 @@
 
     <distributionManagement>
         <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
+            <id>dev.erst.dk</id>
+            <name>dev.erst.dk-releases</name>
+            <url>https://dev.erst.dk/artifactory/erst-components-local</url>
         </repository>
+        <snapshotRepository>
+            <id>dev.erst.dk</id>
+            <name>dev.erst.dk-snapshots</name>
+            <url>https://dev.erst.dk/artifactory/erst-components-local</url>
+        </snapshotRepository>
     </distributionManagement>
+
 
     <dependencies>
 
@@ -115,45 +126,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.2.2</version>
-                <configuration>
-                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
-                </configuration>
             </plugin>
 
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
-                        <configuration>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
